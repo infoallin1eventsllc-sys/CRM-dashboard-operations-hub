@@ -36,7 +36,7 @@ export function LoginScreen() {
       <div className="w-full max-w-sm bg-white rounded-3xl border border-[#E2F0EA] shadow-[0_8px_30px_rgba(0,172,118,0.06)] p-8 space-y-6">
         <div className="flex flex-col items-center gap-3 text-center">
           <img
-            src="/meridian-interface-logo.png"
+            src={`${import.meta.env.BASE_URL}meridian-interface-logo.png`}
             alt="Meridian Interface"
             className="w-12 h-12 rounded-2xl object-contain shadow-[0_4px_12px_rgba(0,172,118,0.25)]"
           />

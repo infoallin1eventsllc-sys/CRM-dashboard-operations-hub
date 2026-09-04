@@ -20,7 +20,8 @@ import {
   type User
 } from "firebase/auth";
 import { db, auth } from "../firebase";
-import { 
+import { IS_DEMO } from "../demo";
+import {
   Lead, 
   Contact, 
   Project, 
@@ -174,6 +175,11 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [authLoading, setAuthLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // The hosted demonstration has no sign-in: it never asks Firebase Auth.
+    if (IS_DEMO) {
+      setAuthLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
       setAuthLoading(false);
@@ -212,7 +218,9 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved === "true";
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [useFirebaseFallback, setUseFirebaseFallback] = useState<boolean>(false);
+  // The demonstration build starts in the localStorage path on purpose (see
+  // src/demo.ts); a normal build only lands there if Firestore is unreachable.
+  const [useFirebaseFallback, setUseFirebaseFallback] = useState<boolean>(IS_DEMO);
   // Tracks which Firestore collections have already received at least one snapshot,
   // so demo data is only ever seeded once per collection (see handleSync below).
   const seededCollectionsRef = useRef<Set<string>>(new Set());
@@ -385,12 +393,18 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (authLoading) {
       return;
     }
-    if (!authUser) {
+    if (!authUser && !IS_DEMO) {
       setIsLoading(false);
       return;
     }
 
     if (useFirebaseFallback) {
+      // First visit to the demonstration: fill localStorage with the sample
+      // records so every section has something to show.
+      if (IS_DEMO && !localStorage.getItem("crm_leads")) {
+        seedDefaultData(true);
+        return;
+      }
       // Load from localStorage if Firebase is flagged to fallback
       const loadLocal = (key: string) => {
         const saved = localStorage.getItem(key);

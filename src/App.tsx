@@ -17,6 +17,7 @@ import { QuickAddModal } from "./components/QuickAddModal";
 import { SystemDiagnosticsModal } from "./components/SystemDiagnosticsModal";
 import { ToastContainer } from "./components/ToastContainer";
 import { LoginScreen } from "./components/LoginScreen";
+import { IS_DEMO } from "./demo";
 import {
   Plus,
   LayoutDashboard,
@@ -77,7 +78,7 @@ function MainAppLayout() {
           {/* Meridian Interface Branding Header */}
           <div className="flex items-center gap-3 py-2 border-b border-[#F0F6F3]">
             <img
-              src="/meridian-interface-logo.png"
+              src={`${import.meta.env.BASE_URL}meridian-interface-logo.png`}
               alt="Meridian Interface"
               className="w-10 h-10 rounded-xl object-contain shrink-0 shadow-[0_4px_12px_rgba(0,172,118,0.25)]"
             />
@@ -216,15 +217,19 @@ function MainAppLayout() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[8px] text-[#6C8E82] font-mono uppercase tracking-wider">CRM Administrator</p>
-              <p className="text-[10px] text-[#112F24] font-semibold truncate">{authUser?.email}</p>
+              <p className="text-[10px] text-[#112F24] font-semibold truncate">
+                {authUser?.email ?? (IS_DEMO ? "Demonstration copy" : "")}
+              </p>
             </div>
-            <button
-              onClick={logout}
-              title="Sign out"
-              className="text-[#6C8E82] hover:text-[#FF5A36] cursor-pointer p-1.5 rounded-lg hover:bg-[#FFECE8] transition-colors shrink-0"
-            >
-              <LogOut size={13} />
-            </button>
+            {!IS_DEMO && (
+              <button
+                onClick={logout}
+                title="Sign out"
+                className="text-[#6C8E82] hover:text-[#FF5A36] cursor-pointer p-1.5 rounded-lg hover:bg-[#FFECE8] transition-colors shrink-0"
+              >
+                <LogOut size={13} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -380,7 +385,9 @@ function AuthGate() {
     );
   }
 
-  if (!authUser) {
+  // The hosted demonstration is open to anyone; its data is local to the
+  // browser (see src/demo.ts), so there is nothing to protect with a login.
+  if (!authUser && !IS_DEMO) {
     return <LoginScreen />;
   }
 

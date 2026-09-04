@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import firebaseConfig from "../firebase-applet-config.json";
+import { IS_DEMO } from "./demo";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
@@ -20,6 +21,8 @@ async function testConnection() {
     }
   }
 }
-testConnection();
+// The hosted demonstration never touches Firestore, so it skips the probe
+// rather than logging a permission error for every visitor.
+if (!IS_DEMO) testConnection();
 
 export { app, db, auth };

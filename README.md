@@ -105,6 +105,16 @@ This is a Node server app that serves both the API and the built client, so it d
 npm run build && npm start
 ```
 
+## Demonstration build
+
+The marketing site at meridianinterface.com hosts a click-through copy of this CRM. That copy has no sign-in, keeps its data in the visitor's browser, and answers AI requests locally with a note that the copilot is off in the demonstration. It is the same code with one build-time flag:
+
+```bash
+VITE_DEMO_MODE=true DEMO_BASE=/demos/meridian-crm/ npx vite build
+```
+
+`DEMO_BASE` is the path the build is served from. See `src/demo.ts` for what the flag changes.
+
 ## Project structure
 
 ```
