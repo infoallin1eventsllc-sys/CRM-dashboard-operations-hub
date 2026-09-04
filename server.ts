@@ -12,6 +12,11 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Health check endpoint for platform monitoring (Render, Cloud Run, etc.)
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok" });
+  });
+
   // Initialize Gemini (handling missing API key gracefully to prevent crash)
   let ai: GoogleGenAI | null = null;
   const apiKey = process.env.GEMINI_API_KEY;
